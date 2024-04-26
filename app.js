@@ -81,12 +81,12 @@ app.post("/contact", cors(corsOptions), (req, res) => {
   })
 
   const corsOptionsC = {
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "https://connorwarme.github.io"],
     optionsSuccessStatus: 200,
   };
   
-  app.options("/contactConnor", cors(corsOptionsC));
-  app.post("/contactConnor", cors(corsOptionsC), (req, res) => {
+  app.options("/contactconnor", cors(corsOptionsC));
+  app.post("/contactconnor", cors(corsOptionsC), (req, res) => {
     body('email').isEmail().normalizeEmail().escape()
     body('message').trim().notEmpty().escape()
   
@@ -117,7 +117,7 @@ app.post("/contact", cors(corsOptions), (req, res) => {
     // still need to update these mail options (from, to)
     // still need to set it up with my email, and with domain...
     const mailOptionsC = {
-      from: '"Contact Connor" <contact@amitywarme.com>', // sender address
+      from: '"Contact Connor" <connorwarme@gmail.com>', // sender address
       to: "connorwarme@gmail.com", // list of receivers
       subject: "New Contact Request", // subject line
       html: output, // html body
