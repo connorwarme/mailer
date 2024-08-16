@@ -28,13 +28,15 @@ const corsOptions = {
 
 app.options("/contact", cors(corsOptions));
 app.post("/contact", cors(corsOptions), (req, res) => {
+  console.log(req.body)
   body('first_name').trim().notEmpty().escape()
   body('family_name').trim().escape()
-  body('email').isEmail().normalizeEmail().escape()
+  // body('email').isEmail().normalizeEmail().escape()
+  body('email').isEmail().escape()
   body('message').trim().notEmpty().escape()
 
   const errors = validationResult(req)
-
+  console.log(errors)
   if (!errors.isEmpty()) {
     res.json({ errors: errors.array() })
     return
@@ -67,6 +69,7 @@ app.post("/contact", cors(corsOptions), (req, res) => {
     to: "amity@amitywarme.com", // list of receivers
     subject: "New Contact Request", // subject line
     html: output, // html body
+    replyTo: req.body.email // respond to user
   };
     // async..await is not allowed in global scope, must use a wrapper
   async function main() {
