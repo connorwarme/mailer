@@ -27,14 +27,16 @@ const corsOptions = {
 };
 
 app.options("/contact", cors(corsOptions));
-app.post("/contact", cors(corsOptions), (req, res) => {
-  console.log(req.body)
-  body('first_name').trim().notEmpty().escape()
-  body('family_name').trim().escape()
-  // body('email').isEmail().normalizeEmail().escape()
-  body('email').isEmail().escape()
-  body('message').trim().notEmpty().escape()
-
+app.post(
+  "/contact", 
+  cors(corsOptions), 
+  // validate and sanitize fields
+  // has to happen before the function!
+  body('first_name').trim().notEmpty().escape(),
+  body('family_name').trim().escape(),
+  body('email').isEmail().escape(),
+  body('message').trim().notEmpty().escape(),
+  (req, res) => {
   const errors = validationResult(req)
   console.log(errors)
   if (!errors.isEmpty()) {
@@ -89,6 +91,7 @@ app.post("/contact", cors(corsOptions), (req, res) => {
   };
   
   app.options("/contactconnor", cors(corsOptionsC));
+  // need to fix validation and sanitization, see Mity mailer above
   app.post("/contactconnor", cors(corsOptionsC), (req, res) => {
     body('email').isEmail().normalizeEmail().escape()
     body('message').trim().notEmpty().escape()
@@ -144,6 +147,7 @@ const corsOptionsD = {
 };
 
 app.options("/contactauthor", cors(corsOptionsD));
+// need to fix validation and sanitization, see Mity mailer above
 app.post("/contactauthor", cors(corsOptionsD), (req, res) => {
   body('email').isEmail().normalizeEmail().escape()
   body('message').trim().notEmpty().escape()
