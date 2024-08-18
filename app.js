@@ -144,16 +144,18 @@ app.post(
 
 // mailer for Dad's "Departing Life" site
 const corsOptionsD = {
+  // needs to be updated with the correct domain
   origin: ["http://localhost:5173", "https://connorwarme.github.io"],
   optionsSuccessStatus: 200,
 };
 
 app.options("/contactauthor", cors(corsOptionsD));
-// need to fix validation and sanitization, see Mity mailer above
-app.post("/contactauthor", cors(corsOptionsD), (req, res) => {
-  body('email').isEmail().normalizeEmail().escape()
-  body('message').trim().notEmpty().escape()
-
+app.post(
+  "/contactauthor", 
+  cors(corsOptionsD), 
+  body('email').isEmail().normalizeEmail().escape(),
+  body('message').trim().notEmpty().escape(),
+  (req, res) => {
   const errors = validationResult(req)
 
   if (!errors.isEmpty()) {
@@ -185,6 +187,7 @@ app.post("/contactauthor", cors(corsOptionsD), (req, res) => {
     to: "connor.warme@gmail.com", // list of receivers
     subject: "New Contact Request", // subject line
     html: output, // html body
+    replyTo: req.body.email // respond to user
   };
     // async..await is not allowed in global scope, must use a wrapper
   async function main() {
