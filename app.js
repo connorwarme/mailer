@@ -22,7 +22,7 @@ app.get("/", function (req, res) {
 });
 
 const corsOptions = {
-  origin: "https://amitywarme.com",
+  origin: ["https://amitywarme.com", "http://localhost:4321"],
   optionsSuccessStatus: 200,
 };
 
@@ -32,15 +32,15 @@ app.post(
   cors(corsOptions), 
   // validate and sanitize fields
   // has to happen before the function!
-  body('first_name').trim().notEmpty().escape(),
-  body('family_name').trim().escape(),
-  body('email').isEmail().escape(),
-  body('message').trim().notEmpty().escape(),
+  body('first_name', "Please provide your name.").trim().notEmpty().escape(),
+  body('family_name', "Please provide your family name.").trim().escape(),
+  body('email', "Please provide a valid email address.").isEmail().escape(),
+  body('message', "Please include a message in your contact request.").trim().notEmpty().escape(),
   (req, res) => {
   const errors = validationResult(req)
   console.log(errors)
   if (!errors.isEmpty()) {
-    res.json({ errors: errors.array() })
+    res.json({ errors: errors.array(), contact: req.body })
     return
   }
 
@@ -91,11 +91,12 @@ app.post(
   };
   
   app.options("/contactconnor", cors(corsOptionsC));
-  // need to fix validation and sanitization, see Mity mailer above
-  app.post("/contactconnor", cors(corsOptionsC), (req, res) => {
-    body('email').isEmail().normalizeEmail().escape()
-    body('message').trim().notEmpty().escape()
-  
+  app.post(
+    "/contactconnor", 
+    cors(corsOptionsC), 
+    body('email').isEmail().normalizeEmail().escape(),
+    body('message').trim().notEmpty().escape(),
+    (req, res) => {
     const errors = validationResult(req)
   
     if (!errors.isEmpty()) {
@@ -127,6 +128,7 @@ app.post(
       to: "connorwarme@gmail.com", // list of receivers
       subject: "New Contact Request", // subject line
       html: output, // html body
+      replyTo: req.body.email // respond to user
     };
       // async..await is not allowed in global scope, must use a wrapper
     async function main() {
